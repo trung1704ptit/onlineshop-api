@@ -17,7 +17,7 @@ const defaultRoutes = [
     route: userRoute,
   },
   {
-    path: '/category',
+    path: '/categories',
     route: categoryRoute
   }
 ];

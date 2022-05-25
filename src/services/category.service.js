@@ -15,6 +15,10 @@ const getCategoryById = async (id) => {
   return Category.findById(id);
 }
 
+const queryCategories = async () => {
+  return Category.find();
+}
+
 /**
  * Update category by id
  * @param {ObjectId} categoryId
@@ -34,5 +38,6 @@ const updateCategoryById = async (categoryId, updateBody) => {
 
 module.exports = {
   createCategory,
-  updateCategoryById
+  updateCategoryById,
+  queryCategories
 }

@@ -5,7 +5,9 @@ const categoryController = require('../../controllers/category.controller');
 
 const router = express.Router();
 
-router.post('/create', validate(categoryValidation), categoryController.create)
+router.route('/')
+  .post(validate(categoryValidation), categoryController.createCategory)
+  .get(validate(categoryValidation), categoryController.getAllCategories)
 
 
 module.exports = router;
@@ -14,12 +16,12 @@ module.exports = router;
  * @swagger
  * tags:
  *  name: Category
- *  description: Category
+ *  description: Category management
 */
 
 /**
  * @swagger
- * /category/create:
+ * /categories:
  *  post:
  *    summary: Create a category
  *    tags: [Category]
@@ -44,6 +46,36 @@ module.exports = router;
  *              name: Sport and Beauty
  *              parent: 89jdskd023928329232sghsd2
  *              ancestors: [3123235dasdsad3434, 4234dasdasd643rfdfd]
- *                  
- *                
+ * 
+ *    responses:
+ *      "200":
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema:
+ *               $ref: '#/components/schemas/Category'
+ *      "401":
+ *        $ref: '#/components/responses/Unauthorized'
+ *      "403":
+ *        $ref: '#/components/responses/Forbidden'
+ *      "404":
+ *        $ref: '#/components/responses/NotFound'  
+ *  get:
+ *    summary: Get all categories
+ *    tags: [Category]
+ *    requestBody:
+ *      required: false
+ *    responses:
+ *      "200":
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema:
+ *               $ref: '#/components/schemas/Category'
+ *      "401":
+ *        $ref: '#/components/responses/Unauthorized'
+ *      "403":
+ *        $ref: '#/components/responses/Forbidden'
+ *      "404":
+ *        $ref: '#/components/responses/NotFound'     
 */
