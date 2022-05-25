@@ -15,7 +15,15 @@ const password = (value, helpers) => {
   return value;
 };
 
+const slug = (value, helpers) => {
+  if (!value.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)) {
+    return helpers.message('Slug is invalid')
+  }
+  return value;
+}
+
 module.exports = {
   objectId,
   password,
+  slug
 };
