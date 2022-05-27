@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { slug } = require('./custom.validation');
+const { slug, objectId } = require('./custom.validation');
 
 const createCategory = {
   body: Joi.object().keys({
@@ -8,6 +8,20 @@ const createCategory = {
   })
 }
 
+const deleteCategory = {
+  params: Joi.object().keys({
+    id: Joi.string().required().custom(objectId)
+  })
+}
+
+const getCategoryById = {
+  params: Joi.object().keys({
+    id: Joi.string().required().custom(objectId)
+  })
+}
+
 module.exports = {
-  createCategory
+  createCategory,
+  deleteCategory,
+  getCategoryById
 }

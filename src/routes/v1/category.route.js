@@ -6,8 +6,12 @@ const categoryController = require('../../controllers/category.controller');
 const router = express.Router();
 
 router.route('/')
-  .post(validate(categoryValidation), categoryController.createCategory)
-  .get(validate(categoryValidation), categoryController.getAllCategories)
+  .post(validate(categoryValidation.createCategory), categoryController.createCategory)
+  .get(categoryController.getAllCategories)
+
+router.route('/:id')
+  .delete(validate(categoryValidation.deleteCategory), categoryController.deleteCategory)
+  .get(validate(categoryValidation.getCategoryById), categoryController.getCategoryById)
 
 
 module.exports = router;
@@ -78,4 +82,52 @@ module.exports = router;
  *        $ref: '#/components/responses/Forbidden'
  *      "404":
  *        $ref: '#/components/responses/NotFound'     
+*/
+
+/**
+ * @swagger
+ * /categories/{id}:
+ *  delete:
+ *    summary: Delete a category
+ *    description: Logged in user can delete Category
+ *    tags: [Category]
+ *    security:
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: cateogry id
+ *    responses:
+ *      "200":
+ *        description: No content
+ *      "401":
+ *        $ref: '#/components/responses/Unauthorized'
+ *      "403":
+ *        $ref: '#/components/responses/Forbiden'
+ *      "404":
+ *        $ref: '#/components/responses/NotFound'
+ * 
+ *  get:
+ *    summary: Get a category by id
+ *    tags: [Category]
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: category id
+ *    responses:
+ *      "200":
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Category'
+ *      "404":
+ *         $ref: '#/components/responses/NotFound'
+ * 
 */
