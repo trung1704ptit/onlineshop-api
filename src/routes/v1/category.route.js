@@ -11,6 +11,7 @@ router.route('/')
 
 router.route('/:id')
   .delete(validate(categoryValidation.deleteCategory), categoryController.deleteCategory)
+  .patch(validate(categoryValidation.updateCategory), categoryController.updateCategory)
   .get(validate(categoryValidation.getCategoryById), categoryController.getCategoryById)
 
 
@@ -128,6 +129,56 @@ module.exports = router;
  *            schema:
  *              $ref: '#/components/schemas/Category'
  *      "404":
+ *         $ref: '#/components/responses/NotFound'
+ * 
+ *  patch:
+ *    summary: Update a category
+ *    description: Logged in user can only update the category.
+ *    tags: [Category]
+ *    security:
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: category id
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - name
+ *            properties:
+ *              name:
+ *                type: string
+ *            parent:
+ *                type: string
+ *            ancestors:
+ *               type: array
+ *               items:
+ *                 type: string
+ *            example:
+ *              name: Sport and Beauty
+ *              parent: 89jdskd023928329232sghsd2
+ *              ancestors: [3123235dasdsad3434, 4234dasdasd643rfdfd]
+ *    responses:
+ *       "200":
+ *          description: OK
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Category'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateEmail'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
  *         $ref: '#/components/responses/NotFound'
  * 
 */

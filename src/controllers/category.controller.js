@@ -17,6 +17,11 @@ const getCategoryById = catchAsync(async (req, res) => {
   res.send(category);
 })
 
+const updateCategory = catchAsync(async (req, res) => {
+  const category = await categoryService.updateCategoryById(req.params.id, req.body)
+  res.send(category)
+})
+
 const deleteCategory = catchAsync(async (req, res) => {
   await categoryService.deleteCategoryById(req.params.id);
   res.send(httpStatus.NO_CONTENT).send();
@@ -24,7 +29,8 @@ const deleteCategory = catchAsync(async (req, res) => {
 
 module.exports = {
   createCategory,
-  deleteCategory,
   getAllCategories,
-  getCategoryById
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
 }
