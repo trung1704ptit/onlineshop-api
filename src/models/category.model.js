@@ -6,7 +6,11 @@ const categorySchema = mongoose.Schema({
   name: String,
   slug: {
     type: String,
-    index: true
+    unique: true
+  },
+  image: {
+    type: String,
+    default: ''
   },
   parent: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +21,7 @@ const categorySchema = mongoose.Schema({
     _id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-      index: true
+      unique: true
     },
     name: String,
     slug: String

@@ -4,7 +4,9 @@ const { slug, objectId } = require('./custom.validation');
 const createCategory = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    // slug: Joi.string().required().custom(slug)
+    image: Joi.string().allow(null, ''),
+    parent: Joi.string().allow(null, ''),
+    ancestors: Joi.array().items(Joi.string()).allow(null)
   })
 }
 
@@ -13,10 +15,9 @@ const updateCategory = {
     id: Joi.string().required()
   }),
   body: Joi.object().keys({
-    name: Joi.string().required(),
-    slug: Joi.string().required().custom(slug),
-    parent: Joi.string(),
-    ancestors: Joi.array().items(Joi.string())
+    name: Joi.string().allow(null, ''),
+    parent: Joi.string().allow(null, ''),
+    ancestors: Joi.array().items(Joi.string()).allow(null)
   })
 }
 
