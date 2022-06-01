@@ -1,5 +1,7 @@
 const httpStatus = require('http-status');
+const fs = require('fs');
 const { Category } = require('../models');
+const slugify = require('../utils/slugify');
 const ApiError = require('../utils/ApiError');
 
 
@@ -42,7 +44,25 @@ const buildHierarchyAncestors = async (categoryId, parentId) => {
  * @param {Object} categoryBody
  * @returns {Promise<Category>}
  */
-const createCategory = async (categoryBody) => {
+const createCategory = async (req, res) => {
+  const categoryBody =  req.body;
+  const image = req.file;
+  const slug = slugify(categoryBody.name);
+  const exist = await Category.find({ slug });
+  
+  if (exist && exist.length > 0 && image) {
+    try {
+      fs.unlinkSync(`uploads/${image.filename}`)
+    } catch(err) {
+      console.error(err)
+    }
+    throw new ApiError(httpStatus.CONFLICT, 'Category already exists')
+  }
+
+  if (image && image.filename) {
+    categoryBody.image = image.filename || '';
+  }
+
   const newCategory = await Category.create(categoryBody);
   await buildHierarchyAncestors(newCategory.id, categoryBody.parent)
   return getCategoryById(newCategory._id)

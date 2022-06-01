@@ -1,12 +1,14 @@
 const express = require('express');
+const multer = require("multer");
 const validate = require('../../middlewares/validate');
 const categoryValidation = require('../../validations/category.validation');
 const categoryController = require('../../controllers/category.controller');
 
+const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 
 router.route('/')
-  .post(validate(categoryValidation.createCategory), categoryController.createCategory)
+  .post(upload.single("file"), validate(categoryValidation.createCategory), categoryController.createCategory)
   .get(categoryController.getAllCategories)
 
 router.route('/:id')
@@ -41,6 +43,9 @@ module.exports = router;
  *            properties:
  *              name:
  *                type: string
+ *              image:
+ *                type: string
+ *                format: binary
  *              parent:
  *                type: string
  *              ancestors:
