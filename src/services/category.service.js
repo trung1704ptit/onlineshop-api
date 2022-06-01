@@ -45,16 +45,16 @@ const buildHierarchyAncestors = async (categoryId, parentId) => {
  * @returns {Promise<Category>}
  */
 const createCategory = async (req, res) => {
-  const categoryBody =  req.body;
+  const categoryBody = req.body;
   const image = req.file;
   const slug = slugify(categoryBody.name);
   const exist = await Category.find({ slug });
-  
+
   if (exist && exist.length > 0) {
     if (image) {
       try {
         fs.unlinkSync(`uploads/${image.filename}`)
-      } catch(err) {
+      } catch (err) {
         console.error(err)
       }
     }
@@ -123,9 +123,25 @@ const deleteCategoryById = async (id) => {
   return category;
 }
 
+/**
+ * Delete bulk category
+ * @returns {Promise<Category>}
+*/
+const deleteBulkCategory = async (ids) => {
+  console.log(ids);
+  await Category.deleteMany({
+    _id: {
+      $in: ids
+    }
+  });
+  return null;
+}
+
+
 module.exports = {
   createCategory,
   deleteCategoryById,
+  deleteBulkCategory,
   getCategoryById,
   updateCategoryById,
   queryCategories

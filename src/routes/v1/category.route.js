@@ -10,6 +10,7 @@ const router = express.Router();
 router.route('/')
   .post(upload.single("file"), validate(categoryValidation.createCategory), categoryController.createCategory)
   .get(categoryController.getAllCategories)
+  .delete(validate(categoryValidation.deleteBulkCategory), categoryController.deleteBulkCategory)
 
 router.route('/:id')
   .delete(validate(categoryValidation.deleteCategory), categoryController.deleteCategory)

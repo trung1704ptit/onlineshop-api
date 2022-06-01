@@ -27,6 +27,12 @@ const deleteCategory = {
   })
 }
 
+const deleteBulkCategory = {
+  body: Joi.object().keys({
+    ids: Joi.array().items(Joi.string())
+  })
+}
+
 const getCategoryById = {
   params: Joi.object().keys({
     id: Joi.string().required().custom(objectId)
@@ -37,5 +43,6 @@ module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
-  getCategoryById
+  deleteBulkCategory,
+  getCategoryById,
 }
