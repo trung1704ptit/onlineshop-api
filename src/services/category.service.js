@@ -50,11 +50,13 @@ const createCategory = async (req, res) => {
   const slug = slugify(categoryBody.name);
   const exist = await Category.find({ slug });
   
-  if (exist && exist.length > 0 && image) {
-    try {
-      fs.unlinkSync(`uploads/${image.filename}`)
-    } catch(err) {
-      console.error(err)
+  if (exist && exist.length > 0) {
+    if (image) {
+      try {
+        fs.unlinkSync(`uploads/${image.filename}`)
+      } catch(err) {
+        console.error(err)
+      }
     }
     throw new ApiError(httpStatus.CONFLICT, 'Category already exists')
   }
