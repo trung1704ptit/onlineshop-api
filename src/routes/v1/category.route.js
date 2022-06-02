@@ -4,11 +4,25 @@ const validate = require('../../middlewares/validate');
 const categoryValidation = require('../../validations/category.validation');
 const categoryController = require('../../controllers/category.controller');
 
-const upload = multer({ dest: "uploads/" });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    console.log(file)
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop())
+  }
+})
+
+const upload = multer({ storage });
 const router = express.Router();
 
 router.route('/')
-  .post(upload.single("file"), validate(categoryValidation.createCategory), categoryController.createCategory)
+  .post(
+    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'icon', maxCount: 1 }]),
+    validate(categoryValidation.createCategory),
+    categoryController.createCategory)
   .get(categoryController.getAllCategories)
   .delete(validate(categoryValidation.deleteBulkCategory), categoryController.deleteBulkCategory)
 

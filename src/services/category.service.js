@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const fs = require('fs');
+const get = require('lodash/get');
 const { Category } = require('../models');
 const slugify = require('../utils/slugify');
 const ApiError = require('../utils/ApiError');
@@ -15,9 +16,9 @@ const buildAncestors = async (categoryId, parentId) => {
   let parent_category = await Category.findOne({ "_id": parentId }, { "name": 1, "slug": 1, "ancestors": 1 })
 
   if (parent_category) {
-    const { _id, name, image, slug } = parent_category;
+    const { _id, name, image, slug, icon } = parent_category;
     ancestors = [...parent_category.ancestors];
-    ancestors.unshift({ _id, name, slug, image })
+    ancestors.unshift({ _id, name, slug, image, icon })
     await Category.findByIdAndUpdate(categoryId, { $set: { "ancestors": ancestors } })
   }
 }
@@ -46,14 +47,23 @@ const buildHierarchyAncestors = async (categoryId, parentId) => {
  */
 const createCategory = async (req, res) => {
   const categoryBody = req.body;
-  const image = req.file;
   const slug = slugify(categoryBody.name);
   const exist = await Category.find({ slug });
 
+  const thumbnailFilename =  get(req, `files.thumbnail[0].filename`, '')
+  const iconFilename =  get(req, `files.icon[0].filename`, '')
+
   if (exist && exist.length > 0) {
-    if (image) {
+    if (thumbnailFilename) {
       try {
-        fs.unlinkSync(`uploads/${image.filename}`)
+        fs.unlinkSync(`uploads/${thumbnailFilename}`)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    if (iconFilename) {
+      try {
+        fs.unlinkSync(`uploads/${iconFilename}`)
       } catch (err) {
         console.error(err)
       }
@@ -61,9 +71,8 @@ const createCategory = async (req, res) => {
     throw new ApiError(httpStatus.CONFLICT, 'Category already exists')
   }
 
-  if (image && image.filename) {
-    categoryBody.image = image.filename || '';
-  }
+  categoryBody.thumbnail = thumbnailFilename;
+  categoryBody.icon = iconFilename;
 
   const newCategory = await Category.create(categoryBody);
   await buildHierarchyAncestors(newCategory.id, categoryBody.parent)

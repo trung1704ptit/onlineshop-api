@@ -8,14 +8,22 @@ const categorySchema = mongoose.Schema({
     type: String,
     unique: true
   },
-  image: {
+  icon: {
     type: String,
-    default: ''
+    default: null,
+  },
+  thumbnail: {
+    type: String,
+    default: null
   },
   parent: {
     type: mongoose.Schema.Types.ObjectId,
     default: null,
     ref: 'Category'
+  },
+  isShow: {
+    type: Boolean,
+    default: true
   },
   ancestors: [{
     _id: {
@@ -26,7 +34,7 @@ const categorySchema = mongoose.Schema({
     name: String,
     slug: String
   }]
-})
+});
 
 categorySchema.pre('save', async function (next) {
   this.slug = slugify(this.name);
