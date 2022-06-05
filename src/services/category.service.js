@@ -50,8 +50,8 @@ const createCategory = async (req, res) => {
   const slug = slugify(categoryBody.name);
   const exist = await Category.find({ slug });
 
-  const thumbnailFilename =  get(req, `files.thumbnail[0].filename`, '')
-  const iconFilename =  get(req, `files.icon[0].filename`, '')
+  const thumbnailFilename = get(req, `files.thumbnail[0].filename`, '')
+  const iconFilename = get(req, `files.icon[0].filename`, '')
 
   if (exist && exist.length > 0) {
     if (thumbnailFilename) {
@@ -97,7 +97,138 @@ const getCategoryById = async (id) => {
  * @returns {Promise<QueryResult>}
 */
 const queryCategories = async () => {
-  return Category.find();
+  const result = await Category.aggregate([
+      {
+        $graphLookup: {
+          from: "categories",
+          startWith: "$_id",
+          connectFromField: "_id",
+          connectToField: "parent",
+          depthField: "level",
+          as: "children"
+        }
+      },
+      {
+        $unwind: {
+          path: "$children",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          "children.level": -1
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          parent: {
+            $first: "$parent"
+          },
+          name: {
+            $first: "$name"
+          },
+          slug: {
+            $first: "$slug"
+          },
+          icon: {
+            $first: "$icon"
+          },
+          thumbnail: {
+            $first: "$thumbnail"
+          },
+          children: {
+            $push: "$children"
+          },
+          ancestors: {
+            $first: "$ancestors"
+          },
+          isShow: {
+            $first: "$isShow"
+          }
+        }
+      },
+      {
+        $addFields: {
+          children: {
+            $reduce: {
+              input: "$children",
+              initialValue: {
+                level: -1,
+                presentChild: [],
+                prevChild: []
+              },
+              in: {
+                $let: {
+                  vars: {
+                    prev: {
+                      $cond: [
+                        {
+                          $eq: [
+                            "$$value.level",
+                            "$$this.level"
+                          ]
+                        },
+                        "$$value.prevChild",
+                        "$$value.presentChild"
+                      ]
+                    },
+                    current: {
+                      $cond: [
+                        {
+                          $eq: [
+                            "$$value.level",
+                            "$$this.level"
+                          ]
+                        },
+                        "$$value.presentChild",
+                        []
+                      ]
+                    }
+                  },
+                  in: {
+                    level: "$$this.level",
+                    prevChild: "$$prev",
+                    presentChild: {
+                      $concatArrays: [
+                        "$$current",
+                        [
+                          {
+                            $mergeObjects: [
+                              "$$this",
+                              {
+                                children: {
+                                  $filter: {
+                                    input: "$$prev",
+                                    as: "e",
+                                    cond: {
+                                      $eq: [
+                                        "$$e.parent",
+                                        "$$this._id"
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          children: "$children.presentChild"
+        }
+      },
+    ])
+  return result;
 }
 
 /**

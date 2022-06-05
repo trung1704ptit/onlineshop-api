@@ -30,9 +30,7 @@ const categorySchema = mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
       unique: true
-    },
-    name: String,
-    slug: String
+    }
   }]
 });
 
@@ -42,7 +40,7 @@ categorySchema.pre('save', async function (next) {
 })
 
 // add plugin that converts mongoose to json
-categorySchema.plugin(toJSON);
+// categorySchema.plugin(toJSON);
 
 /* @typedef Category */
 const Category = mongoose.model('Category', categorySchema);
