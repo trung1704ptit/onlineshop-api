@@ -31,6 +31,11 @@ const categorySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
       },
+      isShow: Boolean,
+      name: String,
+      slug: String,
+      thumbnail: String,
+      icon: String,
     },
   ],
 });
