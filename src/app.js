@@ -6,6 +6,7 @@ const compression = require('compression');
 const cors = require('cors');
 const passport = require('passport');
 const httpStatus = require('http-status');
+const fs = require('fs');
 const config = require('./config/config');
 const morgan = require('./config/morgan');
 const { jwtStrategy } = require('./config/passport');
@@ -36,6 +37,12 @@ app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());
+
+const DIR = './uploads';
+
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
 
 app.use(express.static('uploads'));
 
