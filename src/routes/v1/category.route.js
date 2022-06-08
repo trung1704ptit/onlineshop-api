@@ -1,36 +1,51 @@
 const express = require('express');
-const multer = require("multer");
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
+
+const s3 = new aws.S3({
+  secretAccessKey: process.env.AWS_SECRET_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+});
+
 const validate = require('../../middlewares/validate');
 const categoryValidation = require('../../validations/category.validation');
 const categoryController = require('../../controllers/category.controller');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/')
-  },
-  filename: function (req, file, cb) {
-    console.log(file)
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop())
-  }
-})
+const upload = multer({
+  storage: multerS3({
+    s3,
+    bucket: process.env.AWS_S3_BUCKET,
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: (req, file, cb) => {
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      cb(null, `${file.fieldname}-${uniqueSuffix}.${file.originalname.split('.').pop()}`);
+    },
+  }),
+});
 
-const upload = multer({ storage });
 const router = express.Router();
 
-router.route('/')
+router
+  .route('/')
   .post(
-    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'icon', maxCount: 1 }]),
+    upload.fields([
+      { name: 'thumbnail', maxCount: 1 },
+      { name: 'icon', maxCount: 1 },
+    ]),
     validate(categoryValidation.createCategory),
-    categoryController.createCategory)
+    categoryController.createCategory
+  )
   .get(categoryController.getAllCategories)
-  .delete(validate(categoryValidation.deleteBulkCategory), categoryController.deleteBulkCategory)
+  .delete(validate(categoryValidation.deleteBulkCategory), categoryController.deleteBulkCategory);
 
-router.route('/:id')
+router
+  .route('/:id')
   .delete(validate(categoryValidation.deleteCategory), categoryController.deleteCategory)
   .patch(validate(categoryValidation.updateCategory), categoryController.updateCategory)
-  .get(validate(categoryValidation.getCategoryById), categoryController.getCategoryById)
-
+  .get(validate(categoryValidation.getCategoryById), categoryController.getCategoryById);
 
 module.exports = router;
 
@@ -39,7 +54,7 @@ module.exports = router;
  * tags:
  *  name: Category
  *  description: Category management
-*/
+ */
 
 /**
  * @swagger
@@ -71,7 +86,7 @@ module.exports = router;
  *              name: Sport and Beauty
  *              parent: 89jdskd023928329232sghsd2
  *              ancestors: [3123235dasdsad3434, 4234dasdasd643rfdfd]
- * 
+ *
  *    responses:
  *      "200":
  *        description: OK
@@ -84,7 +99,7 @@ module.exports = router;
  *      "403":
  *        $ref: '#/components/responses/Forbidden'
  *      "404":
- *        $ref: '#/components/responses/NotFound'  
+ *        $ref: '#/components/responses/NotFound'
  *  get:
  *    summary: Get all categories
  *    tags: [Category]
@@ -102,8 +117,8 @@ module.exports = router;
  *      "403":
  *        $ref: '#/components/responses/Forbidden'
  *      "404":
- *        $ref: '#/components/responses/NotFound'     
-*/
+ *        $ref: '#/components/responses/NotFound'
+ */
 
 /**
  * @swagger
@@ -130,7 +145,7 @@ module.exports = router;
  *        $ref: '#/components/responses/Forbiden'
  *      "404":
  *        $ref: '#/components/responses/NotFound'
- * 
+ *
  *  get:
  *    summary: Get a category by id
  *    tags: [Category]
@@ -150,7 +165,7 @@ module.exports = router;
  *              $ref: '#/components/schemas/Category'
  *      "404":
  *         $ref: '#/components/responses/NotFound'
- * 
+ *
  *  patch:
  *    summary: Update a category
  *    description: Logged in user can only update the category.
@@ -200,5 +215,5 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- * 
-*/
+ *
+ */
