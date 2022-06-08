@@ -8,6 +8,10 @@ const categorySchema = mongoose.Schema({
     type: String,
     unique: true,
   },
+  updatedAt: {
+    type: Date,
+    default: new Date(),
+  },
   icon: {
     type: String,
     default: null,
@@ -30,6 +34,7 @@ const categorySchema = mongoose.Schema({
       _id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
+        default: null,
       },
       isShow: Boolean,
       name: String,
