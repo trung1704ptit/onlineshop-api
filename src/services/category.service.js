@@ -130,6 +130,9 @@ const queryCategories = async () => {
         isShow: {
           $first: '$isShow',
         },
+        updatedAt: {
+          $first: '$updatedAt',
+        },
       },
     },
     {
