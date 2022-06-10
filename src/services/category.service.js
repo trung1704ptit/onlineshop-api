@@ -216,7 +216,7 @@ const queryCategories = async () => {
 
   for (let i = 0; i < data.length; i += 1) {
     if (data[i].children) {
-      data[i] = data[i].children.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+      data[i].children = data[i].children.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
     }
   }
 
