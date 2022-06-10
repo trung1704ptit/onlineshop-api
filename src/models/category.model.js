@@ -12,6 +12,10 @@ const categorySchema = mongoose.Schema({
     type: Date,
     default: new Date(),
   },
+  order: {
+    type: Number,
+    default: -1,
+  },
   icon: {
     type: String,
     default: null,

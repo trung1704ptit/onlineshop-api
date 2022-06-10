@@ -133,6 +133,9 @@ const queryCategories = async () => {
         updatedAt: {
           $first: '$updatedAt',
         },
+        order: {
+          $first: '$order',
+        },
       },
     },
     {
@@ -206,7 +209,18 @@ const queryCategories = async () => {
       },
     },
   ]);
-  return result;
+
+  let data = [...result];
+  data = result.filter((item) => item.ancestors.length === 0 || !item.ancestors);
+  data.sort((a, b) => a.order - b.order);
+
+  for (let i = 0; i < data.length; i += 1) {
+    if (data[i].children) {
+      data[i] = data[i].children.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+    }
+  }
+
+  return data;
 };
 
 /**
