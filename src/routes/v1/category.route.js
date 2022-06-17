@@ -38,14 +38,19 @@ router
     validate(categoryValidation.createCategory),
     categoryController.createCategory
   )
-  .get(categoryController.getAllCategories)
+  .get(categoryController.getCategoryTree)
   .delete(validate(categoryValidation.deleteBulkCategory), categoryController.deleteBulkCategory);
+
+router
+  .route('/all-categories')
+  .get(categoryController.getAllCategories)
 
 router
   .route('/:id')
   .delete(validate(categoryValidation.deleteCategory), categoryController.deleteCategory)
   .patch(validate(categoryValidation.updateCategory), categoryController.updateCategory)
   .get(validate(categoryValidation.getCategoryById), categoryController.getCategoryById);
+
 
 module.exports = router;
 

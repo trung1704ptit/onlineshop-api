@@ -7,8 +7,8 @@ const createCategory = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ category })
 })
 
-const getAllCategories = catchAsync(async (req, res) => {
-  const allCategory = await categoryService.queryCategories();
+const getCategoryTree = catchAsync(async (req, res) => {
+  const allCategory = await categoryService.getCategoryTree();
   res.send(allCategory)
 })
 
@@ -32,8 +32,14 @@ const deleteBulkCategory = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 })
 
+const getAllCategories = (catchAsync(async (req, res) => {
+  const allCategories =  await categoryService.getAllCategories();
+  res.send(allCategories)
+}))
+
 module.exports = {
   createCategory,
+  getCategoryTree,
   getAllCategories,
   getCategoryById,
   updateCategory,

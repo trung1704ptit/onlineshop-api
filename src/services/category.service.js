@@ -80,7 +80,7 @@ const createCategory = async (req) => {
  * Get all categories
  * @returns {Promise<QueryResult>}
  */
-const queryCategories = async () => {
+const getCategoryTree = async () => {
   const result = await Category.aggregate([
     {
       $graphLookup: {
@@ -223,6 +223,11 @@ const queryCategories = async () => {
   return data;
 };
 
+const getAllCategories = async () => {
+  const result = await Category.find();
+  return result;
+}
+
 /**
  * Update category by id
  * @param {ObjectId} id
@@ -273,6 +278,7 @@ module.exports = {
   deleteCategoryById,
   deleteBulkCategory,
   getCategoryById,
+  getAllCategories,
   updateCategoryById,
-  queryCategories,
+  getCategoryTree,
 };
